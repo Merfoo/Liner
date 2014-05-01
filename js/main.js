@@ -58,7 +58,8 @@ function paintLine()
 
 function clearScreen()
 {
-    _cvs.game.clearRect(0, 0, _map.width, _map.height);
+    _cvs.game.fillStyle = "black";
+    _cvs.game.fillRect(0, 0, _map.width, _map.height);
 }
 
 function mouseDownEvent(e)
