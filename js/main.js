@@ -1,14 +1,17 @@
+// Gobal variables, starting with _
 var _cvs = { game: null };
 var _map = { width: 0, height: 0 };
 var _line = { body: [], width: 10 };
-var _mouse = { x: null, y: null };
+var _mouse = { x: null, y: null, down: false };
 
 document.addEventListener("DOMContentLoaded", initGame);
 document.documentElement.style.overflowX = "hidden";	 // Horizontal scrollbar will be hidden
 document.documentElement.style.overflowY = "hidden";     // Vertical scrollbar will be hidden
 window.addEventListener("mousedown", mouseDownEvent);
 window.addEventListener("mouseup", mouseUpEvent);
+window.addEventListener("mousemove", mouseMoveEvent);
 
+// Called once when the document has loaded
 function initGame()
 {
     var cvsBorderThick = parseInt(getComputedStyle(document.getElementById('gameCanvas'),null).getPropertyValue('border-width'));
@@ -18,8 +21,10 @@ function initGame()
     _cvs.game.canvas.width = _map.width;
     _cvs.game.canvas.height = _map.height;
     setInterval(gameLoop, 1000 / 60);
+    _line.body.push({ x: 0, y: 0 });
 }
 
+// Main loop for the game
 function gameLoop()
 {
     clearScreen();
@@ -27,11 +32,24 @@ function gameLoop()
     paintLine();
 }
 
+// Adds new points to the line
 function updateLine()
-{
-    var x = getRandomNumber(0, _map.width);
-    var y = getRandomNumber(0, _map.height);
-    _line.body.push({ x: x, y: y });
+{   
+    var x, y;
+    
+    if(_mouse.x !== null && _mouse.y !== null)
+    {
+        x = getRandomNumber(_mouse.x - 200, _mouse.x + 200);
+        y = getRandomNumber(_mouse.y - 200, _mouse.y + 200);
+    }
+    
+    else
+    {
+        x = getRandomNumber(0, _map.width);
+        y = getRandomNumber(0, _map.height);
+    }
+    
+    _line.body.unshift({ x: x, y: y });
  
     for(var i in _line.body)
     {
@@ -42,6 +60,7 @@ function updateLine()
     }
 }
 
+// Paints the line body
 function paintLine()
 {
     _cvs.game.beginPath();
@@ -56,23 +75,38 @@ function paintLine()
     _cvs.game.closePath();
 }
 
+// Paints the whole screen
 function clearScreen()
 {
     _cvs.game.fillStyle = "black";
     _cvs.game.fillRect(0, 0, _map.width, _map.height);
 }
 
+// Gets called once when the mouse button is held down, not continously
 function mouseDownEvent(e)
 {
     console.log(e);
+    _mouse.down = true;
     _mouse.x = e.x;
     _mouse.y = e.y;
 }
 
+// Gets called when the mouse button is released
 function mouseUpEvent(e)
 {
+    _mouse.down = false;
     _mouse.x = null;
     _mouse.y = null;
+}
+
+// Gets called when the mouse moves
+function mouseMoveEvent(e)
+{
+    if(_mouse.down)
+    {
+        _mouse.x = e.x;
+        _mouse.y = e.y;
+    }
 }
 
 // Returns random color between iMin and iMax.
