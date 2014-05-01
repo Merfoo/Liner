@@ -1,0 +1,29 @@
+@font-face
+{
+    font-family: openSansLight;
+    src: url("../fonts/open-sans.light.ttf");
+}
+
+@font-face
+{
+    font-family: openSansLight;
+    src: url("../fonts/open-sans.regular.ttf");
+    font-weight: bold;
+}
+
+*
+{
+    margin: 0px;
+    padding: 0px;
+    font-family: openSansLight;
+    border: none;
+    cursor: default;
+/*    -webkit-user-select: none;*/
+/*    border: solid blue 2px;*/
+}
+
+#gameCanvas
+{
+    top: 0px;
+    left: 0px;
+}
