@@ -32,10 +32,13 @@ function updateLine()
     var x = getRandomNumber(0, _map.width);
     var y = getRandomNumber(0, _map.height);
     _line.body.push({ x: x, y: y });
-    
+ 
     for(var i in _line.body)
     {
         _line.body[i].y += 10;
+        
+        if(_line.body[i].y > _map.height + (_map.height / 3))
+           _line.body.splice(i, 1);
     }
 }
 
