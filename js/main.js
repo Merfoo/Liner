@@ -23,14 +23,14 @@ function initGame()
     _cvs.game.canvas.width = _map.width;
     _cvs.game.canvas.height = _map.height;
     _line.body.push({ x: _map.width / 2, y: 0, visible: true });
-    
+
     window.requestAnimFrame = window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
         function( callback ){
             window.setTimeout(callback, 1000 / 60);
         };
-       
+
     gameLoop();
 }
 
@@ -48,60 +48,98 @@ function gameLoop()
 function updateLine()
 {   
     var lastPos = { x: _line.body[0].x, y: _line.body[0].y };
-    
+
     if(--_lineMode.count <= 0)
     {
         resetLineMode();
         _lineMode.count = getRandomNumber(_lineMode.minCount, _lineMode.maxCount);
         var mode = Math.random();
-        console.log(mode);
+
         if(mode <= 0.25)
             _lineMode.center = true;
-        
+
         else if(mode <= 0.55)
             _lineMode.left = true;
-        
+
         else if(mode < 0.75)
             _lineMode.right = true;
-        
+
         else
             _lineMode.none = true;
     }
-    
+
     if(lastPos.x < 0 + _line.normWidth)
     {
         resetLineMode();
         _lineMode.right = true;
     }
-    
+
     if(lastPos.x > _map.width - _line.normWidth)
     {
         resetLineMode();
         _lineMode.left = true;
     }
-    
+
     var dist = getRandomNumber(1, 5);
-    
+
     if(_lineMode.left)
         dist *= -1;
-    
+
     else if(_lineMode.center)
         dist *= 0;
-    
+
     else if(_lineMode.right)
         dist *= 1;
-    
+
     var p = { x: lastPos.x + dist, y: 0, visible: true, width: _line.normWidth };
     p.visible = !_lineMode.none;
     _line.body.unshift(p);
- 
+
     for(var i in _line.body)
     {
         _line.body[i].y += 10;
-        
-        if(_line.body[i].y > _map.heigh + (_map.height / 3))
-           _line.body.splice(i, 1);
+
+        if(_line.body[i].y > _map.height + (_map.height / 10))
+        {   
+            alert("YOU LOST");
+            resetGame();
+            break;
+            //_line.body.splice(i, 1);
+        }
+
+       if(_line.body[i].y > _touchArea.y && _line.body[i].y < _touchArea.y + _touchArea.height)
+       {
+           if(_mouse.down)
+           {
+                if(Math.abs(_mouse.x - _line.body[i].x) < 15 && Math.abs(_mouse.y - _line.body[i].y) < 15)
+               {
+                    console.log("touching");
+
+                    if(!_line.body[i].visible)
+                    {
+                        alert("YOU LOST");
+                        resetGame();
+                        break;
+                    }
+
+                    else
+                    {
+                        _line.body = _line.body.splice(0, i);
+                        break;
+                    }
+                }
+           }
+       }
     }
+}
+
+// Resets the game
+function resetGame()
+{
+    resetLineMode();
+    _mouse.down = false;
+    _line.body = [];
+    _line.body.push({ x: _map.width / 2, y: 0, visible: true, width: _line.normWidth });
 }
 
 // Resets the the lineMode
@@ -119,18 +157,18 @@ function paintLine()
     _cvs.game.beginPath();
     _cvs.game.lineCap = "round";
     _cvs.game.moveTo(_line.body[0].x, _line.body[0].y);
-    
+
     for(var i = 1; i < _line.body.length; i++)
     {    
         _cvs.game.lineWidth = _line.body[i].width;
-        
+
         if(_line.body[i].visible)
             _cvs.game.lineTo(_line.body[i].x, _line.body[i].y);
-        
+
         else
             _cvs.game.moveTo(_line.body[i].x, _line.body[i].y);
     }
-    
+
     _cvs.game.strokeStyle = getRandomColor(0, 255);
     _cvs.game.stroke();
     _cvs.game.closePath();
