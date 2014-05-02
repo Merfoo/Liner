@@ -30,7 +30,7 @@ function initGame()
         function( callback ){
             window.setTimeout(callback, 1000 / 60);
         };
-        
+       
     gameLoop();
 }
 
@@ -49,35 +49,35 @@ function updateLine()
 {   
     var lastPos = { x: _line.body[0].x, y: _line.body[0].y };
     
-    if(lastPos.x < 0 + _line.width)
+    if(--_lineMode.count <= 0)
+    {
+        resetLineMode();
+        _lineMode.count = getRandomNumber(_lineMode.minCount, _lineMode.maxCount);
+        var mode = Math.random();
+        console.log(mode);
+        if(mode <= 0.25)
+            _lineMode.center = true;
+        
+        else if(mode <= 0.55)
+            _lineMode.left = true;
+        
+        else if(mode < 0.75)
+            _lineMode.right = true;
+        
+        else
+            _lineMode.none = true;
+    }
+    
+    if(lastPos.x < 0 + _line.normWidth)
     {
         resetLineMode();
         _lineMode.right = true;
     }
     
-    if(lastPos.x > _map.width - _line.width)
+    if(lastPos.x > _map.width - _line.normWidth)
     {
         resetLineMode();
         _lineMode.left = true;
-    }
-    
-    if(--_lineMode.count <= 0)
-    {
-        resetLineMode();
-        _lineMode.count = getRandomNumber(_lineMode.minCount, _lineMode.maxCount);
-        var mode = getRandomNumber(1, 1000);
-        
-        if(mode < 250)
-            _lineMode.left = true;
-        
-        else if(mode < 500)
-            _lineMode.center = true;
-        
-        else if(mode < 750)
-            _lineMode.right = true;
-        
-        else
-            _lineMode.none = true;
     }
     
     var dist = getRandomNumber(1, 5);
