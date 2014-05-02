@@ -101,32 +101,34 @@ function updateLine()
 
         if(_line.body[i].y > _map.height + (_map.height / 10))
         {   
-            alert("YOU LOST");
-            resetGame();
-            break;
-            //_line.body.splice(i, 1);
+//            alert("YOU LOST");
+//            resetGame();
+//            break;
+            _line.body.splice(i, 1);
+            continue;
         }
 
-       if(_line.body[i].y > _touchArea.y && _line.body[i].y < _touchArea.y + _touchArea.height)
-       {
-           if(_mouse.down)
-           {
+        if(_line.body[i].y > _touchArea.y && _line.body[i].y < _touchArea.y + _touchArea.height)
+        {
+            if(_mouse.down)
+            {
                 if(Math.abs(_mouse.x - _line.body[i].x) < 15 && Math.abs(_mouse.y - _line.body[i].y) < 15)
                {
                     console.log("touching");
 
-                    if(!_line.body[i].visible)
-                    {
-                        alert("YOU LOST");
-                        resetGame();
-                        break;
-                    }
+                    // if(!_line.body[i].visible)
+                    // {
+                    //     alert("YOU LOST");
+                    //     resetGame();
+                    //     break;
+                    // }
 
-                    else
-                    {
-                        _line.body = _line.body.splice(0, i);
-                        break;
-                    }
+//                    else
+//                    {
+//                        _line.body = _line.body.splice(0, i);
+//                        break;
+//                    }
+                    _line.body[i].visible = false;
                 }
            }
        }
