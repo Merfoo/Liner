@@ -150,10 +150,18 @@ function paintLine()
         _cvs.game.lineWidth = _line.body[i].width;
         
         if(_line.body[i].visible)
+        {    
             _cvs.game.lineTo(_line.body[i].x, _line.body[i].y);
+        }
 
         else
+        {
             _cvs.game.moveTo(_line.body[i].x, _line.body[i].y);
+            
+            if(i + 1 < _line.body.length)
+                if(_line.body[i + 1].visible)
+                    _cvs.game.moveTo(_line.body[i + 1].x, _line.body[i + 1].y);
+        }
     }
 
     _cvs.game.strokeStyle = getRandomColor(0, 255);
