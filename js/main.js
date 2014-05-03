@@ -4,7 +4,7 @@ var _map = { width: 0, height: 0 };
 var _touchArea = { y: 300, height: 200, color: "white" };
 var _line = { body: [], normWidth: 15, smallWidth: 10, bigWidth: 20 };
 var _mouse = { x: null, y: null, down: false };
-var _lineMode = { left: false, center: false, right: false, none: false, count: 0, minCount: 0, maxCount: 25 };
+var _lineMode = { left: false, center: false, right: false, none: false, count: 0, minCount: 10, maxCount: 25, dist: 0 };
 
 document.addEventListener("DOMContentLoaded", initGame);
 document.documentElement.style.overflowX = "hidden";	 // Horizontal scrollbar will be hidden
@@ -51,14 +51,17 @@ function updateLine()
 
     if(--_lineMode.count <= 0)
     {
+        if(_lineMode.none)
+            lastPos.x = getRandomNumber(0, _map.width);
+        
         resetLineMode();
         _lineMode.count = getRandomNumber(_lineMode.minCount, _lineMode.maxCount);
         var mode = Math.random();
 
-        if(mode <= 0.25)
+        if(mode < 0.25)
             _lineMode.center = true;
 
-        else if(mode <= 0.55)
+        else if(mode < 0.555)
             _lineMode.left = true;
 
         else if(mode < 0.75)
@@ -66,6 +69,8 @@ function updateLine()
 
         else
             _lineMode.none = true;
+        
+        _lineMode.dist = getRandomNumber(5, 6);
     }
 
     if(lastPos.x < 0 + _line.normWidth)
@@ -80,30 +85,23 @@ function updateLine()
         _lineMode.left = true;
     }
 
-    var dist = getRandomNumber(1, 5);
-
     if(_lineMode.left)
-        dist *= -1;
+        _lineMode.dist = -Math.abs(_lineMode.dist);
 
     else if(_lineMode.center)
-        dist *= 0;
+        _lineMode.dist = 0;
 
     else if(_lineMode.right)
-        dist *= 1;
+        _lineMode.dist = Math.abs(_lineMode.dist);
 
-    var p = { x: lastPos.x + dist, y: 0, visible: true, width: _line.normWidth };
-    p.visible = !_lineMode.none;
-    _line.body.unshift(p);
+    _line.body.unshift({ x: lastPos.x + _lineMode.dist, y: 0, visible: !_lineMode.none, width: _line.normWidth });
 
     for(var i in _line.body)
     {
-        _line.body[i].y += 10;
+        _line.body[i].y += 5;
 
         if(_line.body[i].y > _map.height + (_map.height / 10))
         {   
-//            alert("YOU LOST");
-//            resetGame();
-//            break;
             _line.body.splice(i, 1);
             continue;
         }
@@ -113,25 +111,12 @@ function updateLine()
             if(_mouse.down)
             {
                 if(Math.abs(_mouse.x - _line.body[i].x) < 15 && Math.abs(_mouse.y - _line.body[i].y) < 15)
-               {
+                {
                     console.log("touching");
-
-                    // if(!_line.body[i].visible)
-                    // {
-                    //     alert("YOU LOST");
-                    //     resetGame();
-                    //     break;
-                    // }
-
-//                    else
-//                    {
-//                        _line.body = _line.body.splice(0, i);
-//                        break;
-//                    }
                     _line.body[i].visible = false;
                 }
-           }
-       }
+            }
+        }
     }
 }
 
@@ -163,7 +148,7 @@ function paintLine()
     for(var i = 1; i < _line.body.length; i++)
     {    
         _cvs.game.lineWidth = _line.body[i].width;
-
+        
         if(_line.body[i].visible)
             _cvs.game.lineTo(_line.body[i].x, _line.body[i].y);
 
