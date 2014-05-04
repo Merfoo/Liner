@@ -4,7 +4,7 @@ var _map = { width: 0, height: 0 };
 var _touchArea = { y: 300, height: 200, color: "white" };
 var _line = { body: [], normWidth: 15, smallWidth: 10, bigWidth: 20 };
 var _mouse = { x: null, y: null, down: false };
-var _lineMode = { left: false, center: false, right: false, none: false, count: 0, minCount: 10, maxCount: 25, dist: 0 };
+var _lineMode = { left: false, center: false, right: false, none: false, count: 0, minCount: 15, maxCount: 25, dist: 0 };
 
 document.addEventListener("DOMContentLoaded", initGame);
 document.documentElement.style.overflowX = "hidden";	 // Horizontal scrollbar will be hidden
@@ -12,6 +12,9 @@ document.documentElement.style.overflowY = "hidden";     // Vertical scrollbar w
 window.addEventListener("mousedown", mouseDownEvent);
 window.addEventListener("mouseup", mouseUpEvent);
 window.addEventListener("mousemove", mouseMoveEvent);
+window.addEventListener("touchstart", mouseDownEvent);
+window.addEventListener("touchend", mouseUpEvent);
+window.addEventListener("touchstart", mouseMoveEvent);
 
 // Called once when the document has loaded
 function initGame()
@@ -22,7 +25,7 @@ function initGame()
     _map.height = window.innerHeight - (cvsBorderThick * 2);
     _cvs.game.canvas.width = _map.width;
     _cvs.game.canvas.height = _map.height;
-    _line.body.push({ x: _map.width / 2, y: 0, visible: true });
+    _line.body.push({ x: _map.width / 2, y: 0, visible: false });
 
     window.requestAnimFrame = window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
@@ -70,7 +73,7 @@ function updateLine()
         else
             _lineMode.none = true;
         
-        _lineMode.dist = getRandomNumber(5, 6);
+        _lineMode.dist = getRandomNumber(6, 8);
     }
 
     if(lastPos.x < 0 + _line.normWidth)
@@ -151,16 +154,10 @@ function paintLine()
         
         if(_line.body[i].visible)
         {    
-            _cvs.game.lineTo(_line.body[i].x, _line.body[i].y);
-        }
-
-        else
-        {
-            _cvs.game.moveTo(_line.body[i].x, _line.body[i].y);
+            if(!_line.body[i - 1].visible)
+                _cvs.game.moveTo(_line.body[i].x, _line.body[i].y);
             
-            if(i + 1 < _line.body.length)
-                if(_line.body[i + 1].visible)
-                    _cvs.game.moveTo(_line.body[i + 1].x, _line.body[i + 1].y);
+            _cvs.game.lineTo(_line.body[i].x, _line.body[i].y);
         }
     }
 
